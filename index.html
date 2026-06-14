@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Off Play Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" type="image/png" href="logo.png" />
+</head>
+
+<body>
+
+  <div class="topbar">
+    <div class="logo">
+      <div class="logo-icon"><i class="ti ti-device-gamepad-2"></i></div>
+      <div>
+        <div class="logo-text">Off Play</div>
+        <div class="logo-sub">304130</div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <div
+        style="font-size:10px;color:#5a5a72;font-family:'Space Mono',monospace;display:flex;align-items:center;gap:5px">
+        <i class="ti ti-database" style="font-size:13px"></i>auto-saved
+      </div>
+      <div class="live-badge"><span class="live-dot"></span>real-time</div>
+    </div>
+  </div>
+
+  <div class="layout">
+    <div class="panel">
+      <div
+        style="text-align: center; margin-bottom: 1.5rem; padding: 0px; background: var(--surface); border-radius: 12px; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; min-height: 60px;">
+        <img src="logo.png" alt="Team Logo" style="width: 100%; object-fit: contain; border-radius: 5px;" />
+      </div>
+      <div class="panel-title">Create New Report</div>
+      <div class="field"><label>year_</label><input id="i-year" type="number" placeholder="2030" /></div>
+      <div class="field"><label>players_M_</label><input id="i-players" type="number" placeholder="30" /></div>
+      <div class="field"><label>game_size_GB_</label><input id="i-size" type="number" placeholder="120" /></div>
+      <div class="field"><label>piracy_%_</label><input id="i-piracy" type="number" min="0" max="100"
+          placeholder="50" /></div>
+      <button class="add-btn" onclick="addRow()">+ add entry</button>
+
+      <div class="divider"></div>
+      <div class="panel-title">Reports</div>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>yr</th>
+            <th>ply</th>
+            <th>sz</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="data-tbody"></tbody>
+      </table>
+    </div>
+
+    <div id="edit-modal"
+      style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:999;align-items:center;justify-content:center">
+      <div
+        style="background:#1a1a2e;border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:1.5rem;width:300px;position:relative">
+        <div
+          style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,#7c6af7,#00d4aa);border-radius:16px 16px 0 0">
+        </div>
+        <div
+          style="font-size:10px;color:#5a5a72;font-family:'Space Mono',monospace;letter-spacing:.1em;text-transform:uppercase;margin-bottom:1rem">
+          // edit entry</div>
+        <div class="field"><label>year_</label><input id="e-year" type="number" /></div>
+        <div class="field"><label>players_M_</label><input id="e-players" type="number" /></div>
+        <div class="field"><label>game_size_GB_</label><input id="e-size" type="number" /></div>
+        <div class="field"><label>piracy_%_</label><input id="e-piracy" type="number" min="0" max="100" /></div>
+        <div style="display:flex;gap:8px;margin-top:1rem">
+          <button onclick="saveEdit()"
+            style="flex:1;padding:9px;font-size:13px;font-weight:600;font-family:'Space Grotesk',sans-serif;border-radius:9px;border:none;background:#7c6af7;color:#fff;cursor:pointer">save</button>
+          <button onclick="closeEdit()"
+            style="padding:9px 14px;font-size:13px;font-family:'Space Grotesk',sans-serif;border-radius:9px;border:1px solid rgba(255,255,255,.12);background:none;color:#8b8ba8;cursor:pointer">cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="dash">
+      <div class="kpi-row">
+        <div class="kpi">
+          <div class="kpi-accent" style="background:var(--accent)"></div>
+          <div class="kpi-label">players</div>
+          <div class="kpi-val" id="k-players" style="color:var(--accent)">—</div>
+          <div class="kpi-sub">million</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-accent" style="background:var(--accent4)"></div>
+          <div class="kpi-label">game size</div>
+          <div class="kpi-val" id="k-size" style="color:var(--accent4)">—</div>
+          <div class="kpi-sub">gigabytes</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-accent" style="background:var(--accent3)"></div>
+          <div class="kpi-label">piracy</div>
+          <div class="kpi-val" id="k-piracy" style="color:var(--accent3)">—</div>
+          <div class="kpi-sub">percent</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-accent" style="background:var(--accent2)"></div>
+          <div class="kpi-label">legal buyers</div>
+          <div class="kpi-val" id="k-legal" style="color:var(--accent2)">—</div>
+          <div class="kpi-sub">percent</div>
+        </div>
+      </div>
+
+      <div class="charts-grid">
+        <div class="chart-card">
+          <div class="chart-card-accent" style="background:var(--accent)"></div>
+          <div class="chart-title"><i class="ti ti-users"></i>players over time</div>
+          <div class="chart-wrap" style="height:200px"><canvas id="c-players"></canvas></div>
+          <div class="legend"><span class="leg"><span class="leg-dot" style="background:#7c6af7"></span>players
+              (M)</span></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-card-accent" style="background:var(--accent4)"></div>
+          <div class="chart-title"><i class="ti ti-server"></i>avg game size</div>
+          <div class="chart-wrap" style="height:200px"><canvas id="c-size"></canvas></div>
+          <div class="legend"><span class="leg"><span class="leg-dot" style="background:#ffd166"></span>size (GB)</span>
+          </div>
+        </div>
+        <div class="chart-card full">
+          <div class="chart-card-accent" style="background:var(--accent3)"></div>
+          <div class="chart-title"><i class="ti ti-chart-bar"></i>piracy vs legal buyers</div>
+          <div class="chart-wrap" style="height:180px"><canvas id="c-stack"></canvas></div>
+          <div class="legend">
+            <span class="leg"><span class="leg-dot" style="background:#ff6b6b"></span>piracy</span>
+            <span class="leg"><span class="leg-dot" style="background:#00d4aa"></span>legal</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    Off Play &mdash; WE School Gharbia &mdash; 304130
+    <br>
+    Developed by <a target="_blank" style="color:gray; text-decoration:none; opacity:0.8"
+      href="http://kareemkhaled.vercel.app/"><strong style="font-style:italic;">Eng.Kareem Khaled</strong></a>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+  <script>
+    const MOCK_API_URL = "https://6a2de50c2edd4cb330d1737a.mockapi.io/offplay/data";
+
+    const cleanUrl = MOCK_API_URL.endsWith('/') ? MOCK_API_URL.slice(0, -1) : MOCK_API_URL;
+
+    const DEFAULT_ROWS = [
+      { year: 2010, players: 7, size: 12, piracy: 75 },
+      { year: 2015, players: 14, size: 30, piracy: 69 },
+      { year: 2020, players: 23, size: 70, piracy: 63 },
+      { year: 2026, players: 25, size: 100, piracy: 59 },
+    ];
+
+    let rows = [];
+
+    const gridC = 'rgba(255,255,255,.06)';
+    const tickC = '#5a5a72';
+    const monoFont = "'Space Mono',monospace";
+    const base = {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false }, tooltip: {
+          backgroundColor: '#1a1a2e', titleColor: '#f0f0fa', bodyColor: '#8b8ba8',
+          borderColor: '#ffffff18', borderWidth: 1, cornerRadius: 8, padding: 12,
+          titleFont: { family: monoFont, size: 11 }, bodyFont: { family: "'Space Grotesk',sans-serif", size: 13 }
+        }
+      },
+      scales: {
+        x: { ticks: { color: tickC, font: { size: 11, family: monoFont } }, grid: { color: gridC } },
+        y: { ticks: { color: tickC, font: { size: 11, family: monoFont } }, grid: { color: gridC } }
+      },
+      animation: { duration: 600, easing: 'easeInOutQuart' }
+    };
+    const stackOpts = {
+      ...base, scales: {
+        x: { ...base.scales.x, stacked: true },
+        y: { ...base.scales.y, stacked: true, max: 100, ticks: { color: tickC, font: { size: 11, family: monoFont }, callback: v => v + '%' } }
+      }
+    };
+
+    const cP = new Chart(document.getElementById('c-players'), { type: 'bar', data: { labels: [], datasets: [] }, options: JSON.parse(JSON.stringify(base)) });
+    const cS = new Chart(document.getElementById('c-size'), { type: 'line', data: { labels: [], datasets: [] }, options: JSON.parse(JSON.stringify(base)) });
+    const cSt = new Chart(document.getElementById('c-stack'), { type: 'bar', data: { labels: [], datasets: [] }, options: JSON.parse(JSON.stringify(stackOpts)) });
+
+    // دالة جلب البيانات من الـ API
+    async function loadData() {
+      try {
+        const response = await fetch(cleanUrl);
+        if (!response.ok) throw new Error('Failed to fetch data from the API !');
+        const data = await response.json();
+
+        rows = data.map(item => ({
+          id: item.id,
+          year: parseInt(item.year) || 0,
+          players: parseFloat(item.players) || 0,
+          size: parseFloat(item.game_size || item.size) || 0,
+          piracy: parseFloat(item.piracy) || 0
+        }));
+
+        updateAll();
+      } catch (error) {
+        console.error("An error occurred while fetching data, downloading from the server !", error);
+        try {
+          const s = localStorage.getItem('offplay_rows');
+          rows = s ? JSON.parse(s) : [...DEFAULT_ROWS];
+        } catch (e) {
+          rows = [...DEFAULT_ROWS];
+        }
+        updateAll();
+      }
+    }
+
+    function updateAll() {
+      const s = [...rows].sort((a, b) => a.year - b.year);
+      const labels = s.map(r => String(r.year));
+
+      cP.data.labels = labels;
+      cP.data.datasets = [{ data: s.map(r => r.players), backgroundColor: 'rgba(124,106,247,.7)', borderColor: '#7c6af7', borderWidth: 1.5, borderRadius: 6, borderSkipped: false }];
+      cP.update();
+
+      cS.data.labels = labels;
+      cS.data.datasets = [{ data: s.map(r => r.size), borderColor: '#ffd166', backgroundColor: 'rgba(255,209,102,.1)', tension: .45, fill: true, pointRadius: 5, pointBackgroundColor: '#ffd166', pointBorderColor: '#0d0d14', pointBorderWidth: 2 }];
+      cS.update();
+
+      cSt.data.labels = labels;
+      cSt.data.datasets = [
+        { label: 'piracy', data: s.map(r => r.piracy), backgroundColor: 'rgba(255,107,107,.8)', borderRadius: 4 },
+        { label: 'legal', data: s.map(r => 100 - r.piracy), backgroundColor: 'rgba(0,212,170,.8)', borderRadius: 4 }
+      ];
+      cSt.update();
+
+      const last = s[s.length - 1];
+      if (last) {
+        document.getElementById('k-players').textContent = last.players + 'M';
+        document.getElementById('k-size').textContent = last.size + 'GB';
+        document.getElementById('k-piracy').textContent = last.piracy + '%';
+        document.getElementById('k-legal').textContent = (100 - last.piracy) + '%';
+      }
+
+      const tbody = document.getElementById('data-tbody');
+      if (!s.length) { tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:1rem;color:#5a5a72;font-family:monospace">no entries yet</td></tr>'; return; }
+      tbody.innerHTML = s.map((r, i) => `<tr>
+    <td>${r.year}</td><td>${r.players}M</td><td>${r.size}G</td>
+    <td style="display:flex;gap:4px">
+      <button class="del-btn" style="color:#7c6af7;font-size:13px" onclick="openEdit(${i})" title="edit">✎</button>
+      <button class="del-btn" onclick="delRow(${i})" title="delete">×</button>
+    </td>
+  </tr>`).join('');
+    }
+
+    async function addRow() {
+      const y = parseInt(document.getElementById('i-year').value);
+      const p = parseFloat(document.getElementById('i-players').value);
+      const sz = parseFloat(document.getElementById('i-size').value);
+      const pi = parseFloat(document.getElementById('i-piracy').value);
+      if ([y, p, sz, pi].some(isNaN)) { alert('أدخل كل البيانات'); return; }
+      if (pi < 0 || pi > 100) { alert('The piracy score must be between 0 and 100.'); return; }
+
+      const yearExists = rows.some(r => r.year === y);
+      if (yearExists) {
+        alert("this year report already exist");
+        return;
+      }
+
+      const newEntry = { year: y, players: p, game_size: sz, piracy: pi };
+
+      try {
+        const response = await fetch(cleanUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(newEntry)
+        });
+        if (response.ok) {
+          ['i-year', 'i-players', 'i-size', 'i-piracy'].forEach(id => document.getElementById(id).value = '');
+          await loadData();
+        } else {
+          throw new Error('Failed to add data to the server !');
+        }
+      } catch (e) {
+        console.error("Failed to add data to the server, save temporarily local !", e);
+        rows.push({ year: y, players: p, size: sz, piracy: pi });
+        try { localStorage.setItem('offplay_rows', JSON.stringify(rows)); } catch (err) { }
+        ['i-year', 'i-players', 'i-size', 'i-piracy'].forEach(id => document.getElementById(id).value = '');
+        updateAll();
+      }
+    }
+
+    async function delRow(i) {
+      const s = [...rows].sort((a, b) => a.year - b.year);
+      const target = s[i];
+
+      if (target.id) {
+        try {
+          const response = await fetch(`${cleanUrl}/${target.id}`, { method: 'DELETE' });
+          if (response.ok) {
+            await loadData();
+          } else {
+            throw new Error('failed to delete from server !');
+          }
+        } catch (e) {
+          console.error("Error while deleting from the server !", e);
+        }
+      } else {
+        rows = rows.filter(r => r !== target);
+        try { localStorage.setItem('offplay_rows', JSON.stringify(rows)); } catch (e) { }
+        updateAll();
+      }
+    }
+
+    let editIdx = null;
+    function openEdit(i) {
+      const s = [...rows].sort((a, b) => a.year - b.year);
+      const r = s[i];
+      editIdx = rows.indexOf(r);
+      document.getElementById('e-year').value = r.year;
+      document.getElementById('e-players').value = r.players;
+      document.getElementById('e-size').value = r.size;
+      document.getElementById('e-piracy').value = r.piracy;
+      document.getElementById('edit-modal').style.display = 'flex';
+    }
+
+    function closeEdit() {
+      document.getElementById('edit-modal').style.display = 'none';
+      editIdx = null;
+    }
+
+    
+    async function saveEdit() {
+      if (editIdx === null) return;
+      const y = parseInt(document.getElementById('e-year').value);
+      const p = parseFloat(document.getElementById('e-players').value);
+      const sz = parseFloat(document.getElementById('e-size').value);
+      const pi = parseFloat(document.getElementById('e-piracy').value);
+      if ([y, p, sz, pi].some(isNaN)) { alert('أدخل كل البيانات'); return; }
+      if (pi < 0 || pi > 100) { alert('القرصنة لازم تكون بين 0 و100'); return; }
+
+    
+      const yearExists = rows.some((r, idx) => r.year === y && idx !== editIdx);
+      if (yearExists) {
+        alert("This year report is already exist");
+        return;
+      }
+
+      const originalItem = rows[editIdx];
+      const updatedEntry = { year: y, players: p, game_size: sz, piracy: pi };
+
+      if (originalItem.id) {
+        try {
+          const response = await fetch(`${cleanUrl}/${originalItem.id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(updatedEntry)
+          });
+          if (response.ok) {
+            closeEdit();
+            await loadData();
+          } else {
+            throw new Error('Data modification failed !');
+          }
+        } catch (e) {
+          console.error("Server update error !", e);
+        }
+      } else {
+        rows[editIdx] = { year: y, players: p, size: sz, piracy: pi };
+        try { localStorage.setItem('offplay_rows', JSON.stringify(rows)); } catch (e) { }
+        closeEdit();
+        updateAll();
+      }
+    }
+
+    document.getElementById('edit-modal').addEventListener('click', function (e) {
+      if (e.target === this) closeEdit();
+    });
+
+
+    loadData();
+  </script>
+</body>
+
+</html>
