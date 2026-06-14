@@ -1,17 +1,16 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en" dir="ltr">
 
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Off Play Dashboard</title>
+  <title>Off Play — Industry Dashboard</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link
     href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap"
     rel="stylesheet" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css" />
   <link rel="stylesheet" href="style.css" />
-  <link rel="icon" type="image/png" href="logo.png" />
 </head>
 
 <body>
@@ -21,7 +20,7 @@
       <div class="logo-icon"><i class="ti ti-device-gamepad-2"></i></div>
       <div>
         <div class="logo-text">Off Play</div>
-        <div class="logo-sub">304130</div>
+        <div class="logo-sub">industry tracker</div>
       </div>
     </div>
     <div style="display:flex;align-items:center;gap:10px">
@@ -29,7 +28,7 @@
         style="font-size:10px;color:#5a5a72;font-family:'Space Mono',monospace;display:flex;align-items:center;gap:5px">
         <i class="ti ti-database" style="font-size:13px"></i>auto-saved
       </div>
-      <div class="live-badge"><span class="live-dot"></span>real-time</div>
+      <div class="live-badge"><span class="live-dot"></span>real-time data</div>
     </div>
   </div>
 
@@ -37,13 +36,13 @@
     <div class="panel">
       <div
         style="text-align: center; margin-bottom: 1.5rem; padding: 0px; background: var(--surface); border-radius: 12px; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; min-height: 60px;">
-        <img src="logo.png" alt="Team Logo" style="width: 100%; object-fit: contain; border-radius: 5px;" />
+        <img src="logo.png" alt="Team Logo" style="width: 100%; object-fit: contain; border-radius: 12px;" />
       </div>
-      <div class="panel-title">Create New Report</div>
+      <div class="panel-title">Create Report</div>
       <div class="field"><label>year_</label><input id="i-year" type="number" placeholder="2030" /></div>
-      <div class="field"><label>players_M_</label><input id="i-players" type="number" placeholder="30" /></div>
-      <div class="field"><label>game_size_GB_</label><input id="i-size" type="number" placeholder="120" /></div>
-      <div class="field"><label>piracy_%_</label><input id="i-piracy" type="number" min="0" max="100"
+      <div class="field"><label>players(M)</label><input id="i-players" type="number" placeholder="30" /></div>
+      <div class="field"><label>game_size(GB)</label><input id="i-size" type="number" placeholder="120" /></div>
+      <div class="field"><label>piracy(%)</label><input id="i-piracy" type="number" min="0" max="100"
           placeholder="50" /></div>
       <button class="add-btn" onclick="addRow()">+ add entry</button>
 
@@ -71,7 +70,8 @@
         </div>
         <div
           style="font-size:10px;color:#5a5a72;font-family:'Space Mono',monospace;letter-spacing:.1em;text-transform:uppercase;margin-bottom:1rem">
-          // edit entry</div>
+          // edit entry
+        </div>
         <div class="field"><label>year_</label><input id="e-year" type="number" /></div>
         <div class="field"><label>players_M_</label><input id="e-players" type="number" /></div>
         <div class="field"><label>game_size_GB_</label><input id="e-size" type="number" /></div>
@@ -151,7 +151,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
   <script>
     const MOCK_API_URL = "https://6a2de50c2edd4cb330d1737a.mockapi.io/offplay/data";
-
     const cleanUrl = MOCK_API_URL.endsWith('/') ? MOCK_API_URL.slice(0, -1) : MOCK_API_URL;
 
     const DEFAULT_ROWS = [
@@ -162,7 +161,6 @@
     ];
 
     let rows = [];
-
     const gridC = 'rgba(255,255,255,.06)';
     const tickC = '#5a5a72';
     const monoFont = "'Space Mono',monospace";
@@ -192,11 +190,10 @@
     const cS = new Chart(document.getElementById('c-size'), { type: 'line', data: { labels: [], datasets: [] }, options: JSON.parse(JSON.stringify(base)) });
     const cSt = new Chart(document.getElementById('c-stack'), { type: 'bar', data: { labels: [], datasets: [] }, options: JSON.parse(JSON.stringify(stackOpts)) });
 
-    // دالة جلب البيانات من الـ API
     async function loadData() {
       try {
         const response = await fetch(cleanUrl);
-        if (!response.ok) throw new Error('Failed to fetch data from the API !');
+        if (!response.ok) throw new Error('Failed to fetch data from API');
         const data = await response.json();
 
         rows = data.map(item => ({
@@ -209,7 +206,7 @@
 
         updateAll();
       } catch (error) {
-        console.error("An error occurred while fetching data, downloading from the server !", error);
+        console.error("Error fetching data, loading from local storage:", error);
         try {
           const s = localStorage.getItem('offplay_rows');
           rows = s ? JSON.parse(s) : [...DEFAULT_ROWS];
@@ -263,12 +260,12 @@
       const p = parseFloat(document.getElementById('i-players').value);
       const sz = parseFloat(document.getElementById('i-size').value);
       const pi = parseFloat(document.getElementById('i-piracy').value);
-      if ([y, p, sz, pi].some(isNaN)) { alert('أدخل كل البيانات'); return; }
-      if (pi < 0 || pi > 100) { alert('The piracy score must be between 0 and 100.'); return; }
+      if ([y, p, sz, pi].some(isNaN)) { alert('Please fill in all fields'); return; }
+      if (pi < 0 || pi > 100) { alert('Piracy percentage must be between 0 and 100'); return; }
 
       const yearExists = rows.some(r => r.year === y);
       if (yearExists) {
-        alert("this year report already exist");
+        alert("This year report already exists");
         return;
       }
 
@@ -284,10 +281,10 @@
           ['i-year', 'i-players', 'i-size', 'i-piracy'].forEach(id => document.getElementById(id).value = '');
           await loadData();
         } else {
-          throw new Error('Failed to add data to the server !');
+          throw new Error('Response error during addition');
         }
       } catch (e) {
-        console.error("Failed to add data to the server, save temporarily local !", e);
+        console.error("Failed to add data to server, saving locally temporarily:", e);
         rows.push({ year: y, players: p, size: sz, piracy: pi });
         try { localStorage.setItem('offplay_rows', JSON.stringify(rows)); } catch (err) { }
         ['i-year', 'i-players', 'i-size', 'i-piracy'].forEach(id => document.getElementById(id).value = '');
@@ -305,10 +302,10 @@
           if (response.ok) {
             await loadData();
           } else {
-            throw new Error('failed to delete from server !');
+            throw new Error('Failed to delete from server');
           }
         } catch (e) {
-          console.error("Error while deleting from the server !", e);
+          console.error("Error deleting from server:", e);
         }
       } else {
         rows = rows.filter(r => r !== target);
@@ -334,20 +331,18 @@
       editIdx = null;
     }
 
-    
     async function saveEdit() {
       if (editIdx === null) return;
       const y = parseInt(document.getElementById('e-year').value);
       const p = parseFloat(document.getElementById('e-players').value);
       const sz = parseFloat(document.getElementById('e-size').value);
       const pi = parseFloat(document.getElementById('e-piracy').value);
-      if ([y, p, sz, pi].some(isNaN)) { alert('أدخل كل البيانات'); return; }
-      if (pi < 0 || pi > 100) { alert('القرصنة لازم تكون بين 0 و100'); return; }
+      if ([y, p, sz, pi].some(isNaN)) { alert('Please fill in all fields'); return; }
+      if (pi < 0 || pi > 100) { alert('Piracy percentage must be between 0 and 100'); return; }
 
-    
       const yearExists = rows.some((r, idx) => r.year === y && idx !== editIdx);
       if (yearExists) {
-        alert("This year report is already exist");
+        alert("This year report already exists");
         return;
       }
 
@@ -365,10 +360,10 @@
             closeEdit();
             await loadData();
           } else {
-            throw new Error('Data modification failed !');
+            throw new Error('Failed to update server');
           }
         } catch (e) {
-          console.error("Server update error !", e);
+          console.error("Error updating server:", e);
         }
       } else {
         rows[editIdx] = { year: y, players: p, size: sz, piracy: pi };
@@ -381,7 +376,6 @@
     document.getElementById('edit-modal').addEventListener('click', function (e) {
       if (e.target === this) closeEdit();
     });
-
 
     loadData();
   </script>
